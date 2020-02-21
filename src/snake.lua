@@ -2,7 +2,8 @@ local Vector = require("lib.vector")
 local Class  = require("lib.middleclass")
 
 local Util = require("src.util")
-local Map  = require("src.map")
+local Map = require("src.map")
+local Pellet = require("src.pellet")
 
 local Segment = Class("SnakeSegment")
 
@@ -36,7 +37,7 @@ function Snake:initialize(initalFrequency)
 
 	self.frequency = initalFrequency
 
-	for _ = 1, 50 do
+	for _ = 1, 10 do
 		table.insert(self.segments, Segment(1, 1, initalFrequency))
 	end
 end
@@ -78,6 +79,9 @@ function Snake:move(dx, dy)
 						return false
 					end
 				end
+			elseif (obj.isInstanceOf and obj:isInstanceOf(Pellet)) then
+				-- Consume pellet
+				obj:consume(self)
 			else
 				-- Object can't be anything else
 				return false
@@ -113,7 +117,7 @@ function Snake:draw()
 		local f = self.head.frequency
 		love.graphics.setColor(f.r, f.g, f.b, 1)
 
-		local x, y, w, h = Util.gridToScreen(self.head.position.x, self.head.position.y)
+		local x, y, w, h = Util.gridToScreenTile(self.head.position.x, self.head.position.y)
 		love.graphics.rectangle("fill", x, y, w, h)
 	end
 
@@ -125,7 +129,7 @@ function Snake:draw()
 			local f = segment.frequency
 			love.graphics.setColor(f.r, f.g, f.b, a)
 
-			local x, y, w, h = Util.gridToScreen(segment.position.x, segment.position.y)
+			local x, y, w, h = Util.gridToScreenTile(segment.position.x, segment.position.y)
 			love.graphics.rectangle("fill", x, y, w, h)
 		end
 	end
