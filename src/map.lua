@@ -1,3 +1,5 @@
+local List = require("lib.list")
+
 local Map = {
 	width  = 0,
 	height = 0,
@@ -12,7 +14,7 @@ function Map.setup(width, height)
 	for x = 1, width do
 		Map.data[x] = {}
 		for y = 1, height do
-			Map.data[x][y] = nil
+			Map.data[x][y] = List()
 		end
 	end
 end
@@ -38,19 +40,23 @@ function Map.inBounds(x, y)
 end
 
 function Map.isFree(x, y)
-	return Map[x][y] == nil
+	return Map.data[x][y].size == 0
 end
 
 function Map.isTaken(x, y)
-	return Map[x][y] ~= nil
+	return Map.data[x][y].size ~= 0
 end
 
-function Map.set(obj, x, y)
-	Map[x][y] = obj
+function Map.add(obj, x, y)
+	Map.data[x][y]:add(obj)
+end
+
+function Map.remove(obj, x, y)
+	Map.data[x][y]:remove(obj)
 end
 
 function Map.get(x, y)
-	return Map[x][y]
+	return Map.data[x][y]
 end
 
 function Map.clear()
