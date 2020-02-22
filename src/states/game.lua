@@ -56,7 +56,7 @@ function Game:keypressed(key)
 	if (key == "d") then Game.snake:moveX( 1) end
 end
 
-function Game:draw(dt)
+local function DrawScene(dt)
 	Game.snake:draw()
 
 	for _, pellet in ipairs(Game.pellets) do
