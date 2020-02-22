@@ -38,7 +38,7 @@ function Snake:initialize(x, y, initalFrequency)
 
 	self.frequency = initalFrequency
 
-	for _ = 1, 50 do
+	for _ = 1, 5 do
 		table.insert(self.segments, Segment(x, y, initalFrequency))
 	end
 end
@@ -128,6 +128,23 @@ end
 function Snake:draw()
 	love.graphics.push("all")
 
+	
+	do
+		love.graphics.setColor(1, 1, 1, 0.5)
+
+		for i = #self.segments, 1, -1 do
+			local segment = self.segments[i]
+			
+			local a = 1 - (i / (#self.segments + 1))
+			a = 1 -- TEMP
+			local f = segment.frequency
+			love.graphics.setColor(f.r, f.g, f.b, a)
+
+			local x, y, w, h = Util.gridToScreenTile(segment.position.x, segment.position.y)
+			love.graphics.rectangle("fill", x, y, w, h)
+		end
+	end
+
 	do
 		local f = self.head.frequency
 		love.graphics.setColor(f.r, f.g, f.b, 1)
@@ -136,18 +153,6 @@ function Snake:draw()
 		love.graphics.rectangle("fill", x, y, w, h)
 	end
 
-	do
-		love.graphics.setColor(1, 1, 1, 0.5)
-
-		for i, segment in ipairs(self.segments) do
-			local a = 1 - (i / (#self.segments + 1))
-			local f = segment.frequency
-			love.graphics.setColor(f.r, f.g, f.b, a)
-
-			local x, y, w, h = Util.gridToScreenTile(segment.position.x, segment.position.y)
-			love.graphics.rectangle("fill", x, y, w, h)
-		end
-	end
 
 	love.graphics.pop()
 end
