@@ -35,16 +35,9 @@ local Snake = Class("Snake")
 function Snake:initialize(x, y, initalFrequency)
 	self.head     = Segment(x, y, initalFrequency)
 	self.segments = {}
-
-	self.frequency = initalFrequency
-
-	for _ = 1, 5 do
-		table.insert(self.segments, Segment(x, y, initalFrequency))
-	end
 end
 
 function Snake:setFrequency(frequency)
-	self.frequency = frequency
 	self.head:setFrequency(frequency)
 end
 
@@ -65,6 +58,7 @@ function Snake:move(dx, dy)
 	end
 
 	-- Collision
+	local atePellet = false
 	do
 		local objs = Map.get(newX, newY)
 		for _, obj in ipairs(objs.objects) do
@@ -90,9 +84,15 @@ function Snake:move(dx, dy)
 				if (obj.frequency == self.head.frequency) then
 					return false
 				end
+			elseif (obj.isInstanceOf and obj:isInstanceOf(Pellet)) then
+				atePellet = obj
 			end
 		end
 	end
+
+	local tail = self.segments[#self.segments] or self.head
+	local previousTailX, previousTailY = tail.position:unpack()
+	local previousTailFrequency = tail.frequency
 
 	-- Move segments to next segment
 	for i = #self.segments, 2, -1 do
@@ -112,14 +112,10 @@ function Snake:move(dx, dy)
 	-- Move head
 	self.head:moveTo(newX, newY)
 
-	-- eat pellets
-	do
-		local objs = Map.get(newX, newY)
-		for _, obj in ipairs(objs.objects) do
-			if (obj.isInstanceOf and obj:isInstanceOf(Pellet)) then
-				obj:consume(self)
-			end
-		end
+	-- if we collided with a pellet...
+	if atePellet then
+		atePellet:consume(self) -- eat the pellet
+		table.insert(self.segments, Segment(previousTailX, previousTailY, previousTailFrequency))
 	end
 
 	return true
