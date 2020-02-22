@@ -2,6 +2,7 @@ local Cartographer = require("lib.cartographer")
 local Moonshine = require("lib.moonshine")
 
 local Frequencies = require("src.frequencies")
+local Gamestate = require("lib.gamestate")
 local Map = require("src.map")
 local Snake = require("src.snake")
 local Pellet = require("src.pellet")
@@ -18,6 +19,7 @@ Game.effect.parameters = {
 }
 
 function Game:enter(previous, levelName)
+	self.levelName = levelName
 	local level = Cartographer.load("level/" .. levelName .. ".lua")
 
 	Map.setup(level.width, level.height)
@@ -43,7 +45,18 @@ function Game:update(dt)
 	Background.update(dt)
 end
 
-local function DrawScene()
+function Game:leave()
+	Map.clear()
+end
+
+function Game:keypressed(key)
+	if (key == "w") then Game.snake:moveY(-1) end
+	if (key == "a") then Game.snake:moveX(-1) end
+	if (key == "s") then Game.snake:moveY( 1) end
+	if (key == "d") then Game.snake:moveX( 1) end
+end
+
+function Game:draw(dt)
 	Game.snake:draw()
 
 	for _, pellet in ipairs(Game.pellets) do
@@ -53,7 +66,6 @@ local function DrawScene()
 	for _, wall in ipairs(Game.walls) do
 		wall:draw()
 	end
-
 end
 
 function Game:draw(dt)
@@ -69,6 +81,10 @@ function Game:keypressed(key)
 	if (key == "a") then Game.snake:moveX(-1) end
 	if (key == "s") then Game.snake:moveY( 1) end
 	if (key == "d") then Game.snake:moveX( 1) end
+
+	if key == 'r' then
+		Gamestate.switch(self, self.levelName)
+	end
 
 	if (key == "f") then
 		local i = 0
