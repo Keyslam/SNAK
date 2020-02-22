@@ -4,6 +4,7 @@ local Class  = require("lib.middleclass")
 local Util = require("src.util")
 local Map = require("src.map")
 local Pellet = require("src.pellet")
+local Wall = require("src.wall")
 
 local Segment = Class("SnakeSegment")
 
@@ -37,7 +38,7 @@ function Snake:initialize(x, y, initalFrequency)
 
 	self.frequency = initalFrequency
 
-	for _ = 1, 10 do
+	for _ = 1, 50 do
 		table.insert(self.segments, Segment(x, y, initalFrequency))
 	end
 end
@@ -78,6 +79,16 @@ function Snake:move(dx, dy)
 					if (obj == self.segments[1]) then
 						return false
 					end
+				end
+			elseif (obj.isInstanceOf and obj:isInstanceOf(Wall)) then
+				-- Wall doesn't have frequency, is solid
+				if (not obj.frequency) then
+					return false
+				end
+
+				-- Can only go through different frequencies
+				if (obj.frequency == self.head.frequency) then
+					return false
 				end
 			end
 		end

@@ -17,6 +17,7 @@
    <property name="color" type="int" value="3"/>
   </properties>
  </tile>
+ <tile id="4" type="wall"/>
  <tile id="5" type="wall">
   <properties>
    <property name="color" type="int" value="1"/>
