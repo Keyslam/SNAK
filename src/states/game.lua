@@ -1,12 +1,21 @@
 local Cartographer = require("lib.cartographer")
+local Moonshine = require("lib.moonshine")
 
 local Frequencies = require("src.frequencies")
 local Map = require("src.map")
 local Snake = require("src.snake")
 local Pellet = require("src.pellet")
 local Wall = require("src.wall")
+local Background = require("src.background")
 
 local Game = {}
+Game.effect = Moonshine(Moonshine.effects.glow)
+Game.effect.parameters = {
+	glow = {
+		min_luma = 0,
+		strength = 4,
+	},
+}
 
 function Game:enter(previous, levelName)
 	local level = Cartographer.load("level/" .. levelName .. ".lua")
@@ -31,9 +40,10 @@ function Game:enter(previous, levelName)
 end
 
 function Game:update(dt)
+	Background.update(dt)
 end
 
-function Game:draw(dt)
+local function DrawScene()
 	Game.snake:draw()
 
 	for _, pellet in ipairs(Game.pellets) do
@@ -43,6 +53,13 @@ function Game:draw(dt)
 	for _, wall in ipairs(Game.walls) do
 		wall:draw()
 	end
+
+end
+
+function Game:draw(dt)
+	--Background:draw()
+
+	Game.effect.draw(DrawScene)
 
 	love.graphics.print("Gamestate: Game", 0, 0)
 end
