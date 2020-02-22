@@ -79,12 +79,6 @@ function Snake:move(dx, dy)
 						return false
 					end
 				end
-			elseif (obj.isInstanceOf and obj:isInstanceOf(Pellet)) then
-				-- Consume pellet
-				obj:consume(self)
-			else
-				-- Object can't be anything else
-				return false
 			end
 		end
 	end
@@ -106,6 +100,16 @@ function Snake:move(dx, dy)
 
 	-- Move head
 	self.head:moveTo(newX, newY)
+
+	-- eat pellets
+	do
+		local objs = Map.get(newX, newY)
+		for _, obj in ipairs(objs.objects) do
+			if (obj.isInstanceOf and obj:isInstanceOf(Pellet)) then
+				obj:consume(self)
+			end
+		end
+	end
 
 	return true
 end
