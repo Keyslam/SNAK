@@ -31,6 +31,9 @@ end
 
 local Snake = Class("Snake")
 
+Snake.waveformResolution = 100
+Snake.animationSpeed = .5
+
 function Snake:initialize(initalFrequency)
 	self.head     = Segment(1, 1, initalFrequency)
 	self.segments = {}
@@ -40,6 +43,8 @@ function Snake:initialize(initalFrequency)
 	for _ = 1, 10 do
 		table.insert(self.segments, Segment(1, 1, initalFrequency))
 	end
+
+	self.animationPhase = 0
 end
 
 function Snake:setFrequency(frequency)
@@ -110,30 +115,40 @@ function Snake:move(dx, dy)
 	return true
 end
 
+function Snake:update(dt)
+	self.animationPhase = self.animationPhase + self.animationSpeed * dt
+	while self.animationPhase > 1 do
+		self.animationPhase = self.animationPhase - 1
+	end
+end
+
 function Snake:draw()
-	love.graphics.push("all")
-
-	do
-		local f = self.head.frequency
-		love.graphics.setColor(f.r, f.g, f.b, 1)
-
-		local x, y, w, h = Util.gridToScreenTile(self.head.position.x, self.head.position.y)
-		love.graphics.rectangle("fill", x, y, w, h)
-	end
-
-	do
-		love.graphics.setColor(1, 1, 1, 0.5)
-
-		for i, segment in ipairs(self.segments) do
-			local a = 1 - (i / (#self.segments + 1))
-			local f = segment.frequency
-			love.graphics.setColor(f.r, f.g, f.b, a)
-
-			local x, y, w, h = Util.gridToScreenTile(segment.position.x, segment.position.y)
-			love.graphics.rectangle("fill", x, y, w, h)
+	love.graphics.push 'all'
+	local phase = 0
+	-- iterate through each segment
+	for i = 0, #self.segments - 1 do
+		local points = {}
+		-- workaround: segment 0 is the head
+		local segmentA = self.segments[i] or self.head
+		local segmentB = self.segments[i + 1]
+		-- get the line segment formed by each segment's center
+		local pointA = Vector(Util.gridToScreenTile((segmentA.position + Vector(.5, .5)):unpack()))
+		local pointB = Vector(Util.gridToScreenTile((segmentB.position + Vector(.5, .5)):unpack()))
+		-- get the normal vector of the line segment. this is the axis on which the line
+		-- will be made Wavy
+		local normalVector = (pointB - pointA):perpendicular():normalized()
+		for fraction = 0, 1, 1 / self.waveformResolution do
+			-- update the phase
+			phase = phase + segmentA.frequency.frequency / self.waveformResolution
+			while phase > 1 do phase = phase - 1 end
+			local point = Util.lerp(pointA, pointB, fraction)
+			point = point + normalVector * 8 * math.sin((phase + self.animationPhase) * 2 * math.pi)
+			table.insert(points, point.x)
+			table.insert(points, point.y)
 		end
+		love.graphics.setColor(segmentA.frequency.r, segmentA.frequency.g, segmentA.frequency.b)
+		love.graphics.line(points)
 	end
-
 	love.graphics.pop()
 end
 

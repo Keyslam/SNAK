@@ -18,6 +18,7 @@ function Game.enter()
 end
 
 function Game:update(dt)
+	Game.snake:update(dt)
 end
 
 function Game:draw(dt)

@@ -1,5 +1,9 @@
 local Util = {}
 
+function Util.lerp(a, b, amount)
+	return a + (b - a) * amount
+end
+
 function Util.gridToScreen(x, y)
 	local sx = (x - 1) * 32
 	local sy = (y - 1) * 32
