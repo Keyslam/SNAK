@@ -100,13 +100,13 @@ function Snake:move(dx, dy)
 		local nextSegment = self.segments[i - 1]
 
 		segment:moveTo(nextSegment.position.x, nextSegment.position.y)
-		segment:setFrequency(nextSegment.frequency)
+		if atePellet then segment:setFrequency(nextSegment.frequency) end
 	end
 
 	-- Move first segment to head
 	if (self.segments[1]) then
 		self.segments[1]:moveTo(self.head.position.x, self.head.position.y)
-		self.segments[1]:setFrequency(self.head.frequency)
+		if atePellet then self.segments[1]:setFrequency(self.head.frequency) end
 	end
 
 	-- Move head

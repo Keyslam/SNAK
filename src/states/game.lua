@@ -1,6 +1,6 @@
 local Cartographer = require("lib.cartographer")
-
 local Frequencies = require("src.frequencies")
+local Gamestate = require("lib.gamestate")
 local Map = require("src.map")
 local Snake = require("src.snake")
 local Pellet = require("src.pellet")
@@ -9,6 +9,7 @@ local Wall = require("src.wall")
 local Game = {}
 
 function Game:enter(previous, levelName)
+	self.levelName = levelName
 	local level = Cartographer.load("level/" .. levelName .. ".lua")
 
 	Map.setup(level.width, level.height)
@@ -33,6 +34,21 @@ end
 function Game:update(dt)
 end
 
+function Game:keypressed(key)
+	if (key == "w") then Game.snake:moveY(-1) end
+	if (key == "a") then Game.snake:moveX(-1) end
+	if (key == "s") then Game.snake:moveY( 1) end
+	if (key == "d") then Game.snake:moveX( 1) end
+
+	if key == 'r' then
+		Gamestate.switch(self, self.levelName)
+	end
+end
+
+function Game:leave()
+	Map.clear()
+end
+
 function Game:draw(dt)
 	Game.snake:draw()
 
@@ -42,29 +58,6 @@ function Game:draw(dt)
 
 	for _, wall in ipairs(Game.walls) do
 		wall:draw()
-	end
-
-	love.graphics.print("Gamestate: Game", 0, 0)
-end
-
-function Game:keypressed(key)
-	if (key == "w") then Game.snake:moveY(-1) end
-	if (key == "a") then Game.snake:moveX(-1) end
-	if (key == "s") then Game.snake:moveY( 1) end
-	if (key == "d") then Game.snake:moveX( 1) end
-
-	if (key == "f") then
-		local i = 0
-		for _i, f in ipairs(Frequencies) do
-			if (Game.snake.frequency == f) then
-				i = _i
-			end
-		end
-
-		i = i + 1
-		if (i > #Frequencies) then i = 1 end
-
-		Game.snake:setFrequency(Frequencies[i])
 	end
 end
 
