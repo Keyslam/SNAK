@@ -1,3 +1,4 @@
+local cartographer = require("lib.cartographer")
 local Frequencies = require("src.frequencies")
 local Map = require("src.map")
 local Snake = require("src.snake")
@@ -5,15 +6,21 @@ local Pellet = require("src.pellet")
 
 local Game = {}
 
-function Game.enter()
-	Map.setup(20, 20)
+function Game:enter(previous, levelName)
+	local level = cartographer.load("level/" .. levelName .. ".lua")
 
-	Game.snake = Snake(Frequencies[1])
+	Map.setup(level.width, level.height)
 	Game.pellets = {}
 
-	for i = 1, 20 do
-		local pellet = Pellet(love.math.random(1, 20), love.math.random(1, 20))
-		table.insert(Game.pellets, pellet)
+	for _, gid, gridX, gridY in level.layers.tiles:getTiles() do
+		local x, y = gridX + 1, gridY + 1
+		local type = level:getTileType(gid)
+		if type == 'snake' then
+			Game.snake = Snake(x, y, Frequencies[1])
+		elseif type == 'pellet' then
+			local color = level:getTileProperty(gid, 'color')
+			table.insert(Game.pellets, Pellet(x, y, Frequencies[color]))
+		end
 	end
 end
 

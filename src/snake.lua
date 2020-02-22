@@ -31,14 +31,14 @@ end
 
 local Snake = Class("Snake")
 
-function Snake:initialize(initalFrequency)
-	self.head     = Segment(1, 1, initalFrequency)
+function Snake:initialize(x, y, initalFrequency)
+	self.head     = Segment(x, y, initalFrequency)
 	self.segments = {}
 
 	self.frequency = initalFrequency
 
 	for _ = 1, 10 do
-		table.insert(self.segments, Segment(1, 1, initalFrequency))
+		table.insert(self.segments, Segment(x, y, initalFrequency))
 	end
 end
 

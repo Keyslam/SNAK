@@ -1,20 +1,20 @@
 local Class  = require("lib.middleclass")
 local Vector = require("lib.vector")
 
-local Frequencies = require("src.frequencies")
 local Util = require("src.util")
 local Map = require("src.map")
 
 local Pellet = Class("Pellet")
 
-function Pellet:initialize(x, y)
+function Pellet:initialize(x, y, frequency)
 	self.position = Vector(x, y)
+	self.frequency = frequency
 
 	Map.add(self, self.position.x, self.position.y)
 end
 
 function Pellet:consume(snake)
-	snake:setFrequency(Frequencies[love.math.random(1, #Frequencies)])
+	snake:setFrequency(self.frequency)
 
 	Map.remove(self, self.position.x, self.position.y)
 
@@ -26,17 +26,11 @@ function Pellet:draw()
 		return
 	end
 
-	do
-		local x, y, w, h = Util.gridToScreen(self.position.x, self.position.y)
-		love.graphics.setColor(1, 1, 1, 1)
-		love.graphics.rectangle("fill", x, y, w, h)
-	end
-
-	do
-		local x, y, w, h = Util.gridToScreenTile(self.position.x, self.position.y)
-		love.graphics.setColor(0.62, 0.30, 0.71, 1)
-		love.graphics.rectangle("fill", x, y, w, h)
-	end
+	love.graphics.push("all")
+	local x, y = Util.gridToScreen((self.position + Vector(.5, .5)):unpack())
+	love.graphics.setColor(self.frequency.r, self.frequency.g, self.frequency.b)
+	love.graphics.circle('fill', x, y, 8, 64)
+	love.graphics.pop()
 end
 
 return Pellet
