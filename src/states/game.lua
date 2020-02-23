@@ -20,23 +20,28 @@ Game.effect.parameters = {
 
 function Game:enter(previous, levelName)
 	self.levelName = levelName
-	local level = Cartographer.load("level/" .. levelName .. ".lua")
+	self.level = Cartographer.load("level/" .. levelName .. ".lua")
 
-	Map.setup(level.width, level.height)
+	Map.setup(self.level.width, self.level.height)
 	Game.pellets = {}
 	Game.walls   = {}
 
-	for _, gid, gridX, gridY in level.layers.tiles:getTiles() do
+	for _, gid, gridX, gridY in self.level.layers.tiles:getTiles() do
 		local x, y = gridX + 1, gridY + 1
-		local type = level:getTileType(gid)
+		local type = self.level:getTileType(gid)
+		if type == 'wall' then
+			local color = self.level:getTileProperty(gid, 'color')
+			table.insert(Game.walls, Wall(x, y, color and Frequencies[color]))
+		end
+	end
+	for _, gid, gridX, gridY in self.level.layers.entities:getTiles() do
+		local x, y = gridX + 1, gridY + 1
+		local type = self.level:getTileType(gid)
 		if type == 'snake' then
 			Game.snake = Snake(x, y, Frequencies[1])
 		elseif type == 'pellet' then
-			local color = level:getTileProperty(gid, 'color')
+			local color = self.level:getTileProperty(gid, 'color')
 			table.insert(Game.pellets, Pellet(x, y, Frequencies[color]))
-		elseif type == 'wall' then
-			local color = level:getTileProperty(gid, 'color')
-			table.insert(Game.walls, Wall(x, y, color and Frequencies[color]))
 		end
 	end
 end
@@ -59,12 +64,10 @@ end
 local function DrawScene(dt)
 	Game.snake:draw()
 
+	Game.level.layers.tiles:draw()
+
 	for _, pellet in ipairs(Game.pellets) do
 		pellet:draw()
-	end
-
-	for _, wall in ipairs(Game.walls) do
-		wall:draw()
 	end
 end
 

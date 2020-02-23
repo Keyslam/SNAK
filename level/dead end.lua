@@ -6,9 +6,9 @@ return {
   renderorder = "right-down",
   width = 10,
   height = 10,
-  tilewidth = 16,
-  tileheight = 16,
-  nextlayerid = 2,
+  tilewidth = 64,
+  tileheight = 64,
+  nextlayerid = 4,
   nextobjectid = 1,
   properties = {},
   tilesets = {
@@ -16,76 +16,165 @@ return {
       name = "tiles",
       firstgid = 1,
       filename = "tilesets/tiles.tsx",
-      tilewidth = 16,
-      tileheight = 16,
+      tilewidth = 64,
+      tileheight = 64,
       spacing = 0,
       margin = 0,
-      columns = 4,
-      image = "image/tiles.png",
-      imagewidth = 64,
-      imageheight = 64,
+      columns = 10,
+      image = "../image/SNAK-Tileset.png",
+      imagewidth = 640,
+      imageheight = 192,
       tileoffset = {
         x = 0,
         y = 0
       },
       grid = {
         orientation = "orthogonal",
-        width = 16,
-        height = 16
+        width = 64,
+        height = 64
       },
       properties = {},
       terrains = {},
-      tilecount = 16,
+      tilecount = 30,
       tiles = {
         {
           id = 0,
-          type = "snake"
+          type = "door",
+          properties = {
+            ["color"] = 1
+          }
         },
         {
           id = 1,
-          type = "pellet",
+          type = "door",
           properties = {
-            ["color"] = 1
+            ["color"] = 2
           }
         },
         {
           id = 2,
-          type = "pellet",
-          properties = {
-            ["color"] = 2
-          }
-        },
-        {
-          id = 3,
-          type = "pellet",
+          type = "door",
           properties = {
             ["color"] = 3
           }
         },
         {
-          id = 4,
-          type = "wall"
+          id = 3,
+          type = "door"
         },
         {
           id = 5,
-          type = "wall",
+          type = "wall"
+        },
+        {
+          id = 6,
+          type = "wall"
+        },
+        {
+          id = 7,
+          type = "wall"
+        },
+        {
+          id = 8,
+          type = "wall"
+        },
+        {
+          id = 9,
+          type = "wall"
+        },
+        {
+          id = 10,
+          type = "door",
           properties = {
             ["color"] = 1
           }
         },
         {
-          id = 6,
-          type = "wall",
+          id = 11,
+          type = "door",
           properties = {
             ["color"] = 2
           }
         },
         {
-          id = 7,
-          type = "wall",
+          id = 12,
+          type = "door",
           properties = {
             ["color"] = 3
           }
+        },
+        {
+          id = 13,
+          type = "door"
+        },
+        {
+          id = 14,
+          type = "snake"
+        },
+        {
+          id = 15,
+          type = "wall"
+        },
+        {
+          id = 16,
+          type = "wall"
+        },
+        {
+          id = 17,
+          type = "wall"
+        },
+        {
+          id = 18,
+          type = "wall"
+        },
+        {
+          id = 19,
+          type = "wall"
+        },
+        {
+          id = 20,
+          type = "pellet",
+          properties = {
+            ["color"] = 1
+          }
+        },
+        {
+          id = 21,
+          type = "pellet",
+          properties = {
+            ["color"] = 2
+          }
+        },
+        {
+          id = 22,
+          type = "pellet",
+          properties = {
+            ["color"] = 3
+          }
+        },
+        {
+          id = 23,
+          type = "pellet"
+        },
+        {
+          id = 25,
+          type = "wall"
+        },
+        {
+          id = 26,
+          type = "wall"
+        },
+        {
+          id = 27,
+          type = "wall"
+        },
+        {
+          id = 28,
+          type = "wall"
+        },
+        {
+          id = 29,
+          type = "wall"
         }
       }
     }
@@ -93,7 +182,7 @@ return {
   layers = {
     {
       type = "tilelayer",
-      id = 1,
+      id = 2,
       name = "tiles",
       x = 0,
       y = 0,
@@ -106,15 +195,42 @@ return {
       properties = {},
       encoding = "lua",
       data = {
-        0, 5, 5, 5, 5, 5, 0, 0, 0, 0,
-        0, 5, 2, 8, 4, 5, 0, 0, 0, 0,
-        0, 5, 0, 5, 0, 5, 0, 0, 0, 0,
-        0, 5, 0, 0, 1, 5, 0, 0, 0, 0,
-        0, 5, 0, 5, 0, 5, 0, 0, 0, 0,
-        0, 5, 0, 0, 3, 5, 0, 0, 0, 0,
-        0, 5, 5, 5, 7, 5, 0, 0, 0, 0,
-        0, 0, 0, 5, 3, 5, 0, 0, 0, 0,
-        0, 0, 0, 5, 5, 5, 0, 0, 0, 0,
+        0, 6, 7, 7, 7, 8, 0, 0, 0, 0,
+        0, 16, 0, 12, 0, 18, 0, 0, 0, 0,
+        0, 16, 0, 17, 0, 18, 0, 0, 0, 0,
+        0, 16, 0, 0, 0, 18, 0, 0, 0, 0,
+        0, 16, 0, 17, 0, 18, 0, 0, 0, 0,
+        0, 16, 0, 0, 0, 18, 0, 0, 0, 0,
+        0, 26, 27, 10, 1, 18, 0, 0, 0, 0,
+        0, 0, 0, 16, 0, 18, 0, 0, 0, 0,
+        0, 0, 0, 26, 27, 28, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      }
+    },
+    {
+      type = "tilelayer",
+      id = 3,
+      name = "entities",
+      x = 0,
+      y = 0,
+      width = 10,
+      height = 10,
+      visible = false,
+      opacity = 1,
+      offsetx = 0,
+      offsety = 0,
+      properties = {},
+      encoding = "lua",
+      data = {
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 23, 0, 22, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 15, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 21, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 21, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0
       }
     }
