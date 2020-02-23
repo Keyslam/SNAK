@@ -9,6 +9,8 @@ local Vector = require("lib.vector")
 function Pellet:initialize(x, y, frequency)
 	self.position = Vector(x, y)
 	self.frequency = frequency
+	self.animationPhase = love.math.random()
+	self.animationSpeed = Util.lerp(1/3, 1, love.math.random())
 
 	Map.add(self, self.position.x, self.position.y)
 end
@@ -21,6 +23,13 @@ function Pellet:consume(snake)
 	self.dead = true
 end
 
+function Pellet:update(dt)
+	self.animationPhase = self.animationPhase + self.animationSpeed * dt
+	while self.animationPhase >= 1 do
+		self.animationPhase = self.animationPhase - 1
+	end
+end
+
 function Pellet:draw()
 	if (self.dead) then -- TEMP
 		return
@@ -29,7 +38,7 @@ function Pellet:draw()
 	love.graphics.push("all")
 	local x, y = Util.gridToScreen(self.position:unpack())
 	love.graphics.setColor(self.frequency.r, self.frequency.g, self.frequency.b)
-	love.graphics.draw(Image.tileset, Quad.pellet, x, y)
+	love.graphics.draw(Image.tileset, Quad.pellet, x, y + 4 * math.sin(self.animationPhase * 2 * math.pi))
 	love.graphics.pop()
 end
 

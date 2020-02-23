@@ -48,6 +48,9 @@ end
 
 function Game:update(dt)
 	Background.update(dt)
+	for _, pellet in ipairs(Game.pellets) do
+		pellet:update(dt)
+	end
 end
 
 function Game:leave()
