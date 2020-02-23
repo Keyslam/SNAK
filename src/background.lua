@@ -1,28 +1,30 @@
-local Moonshine = require("lib.moonshine")
-
-local Background = {}
-Background.canvas = love.graphics.newCanvas(love.graphics.getWidth(), love.graphics.getHeight())
-Background.shader = love.graphics.newShader("src/backgroundShader.glsl")
-Background.time = 0
+local Background = {
+	phase = 0,
+}
 
 function Background.update(dt)
-	Background.time = Background.time + dt / 10
+	Background.phase = Background.phase + .01 * dt
+	while Background.phase >= 1 do
+		Background.phase = Background.phase - 1
+	end
 end
 
 function Background.draw()
 	love.graphics.push 'all'
-	love.graphics.setColor(176 / 255, 66 / 255, 1, 1)
-	love.graphics.setCanvas(Background.canvas)
-	love.graphics.rectangle("fill", 0, love.graphics.getHeight() / 2 - 200, love.graphics.getWidth(), 50)
-	love.graphics.rectangle("fill", 0, love.graphics.getHeight() / 2 - 50, love.graphics.getWidth(), 100)
-	love.graphics.rectangle("fill", 0, love.graphics.getHeight() / 2 + 150, love.graphics.getWidth(), 25)
-	love.graphics.pop()
-
-	love.graphics.push 'all'
-	love.graphics.setShader(Background.shader)
-	Background.shader:send("time", Background.time)
-	love.graphics.setColor(1, 1, 1, .1)
-	love.graphics.draw(Background.canvas)
+	love.graphics.setColor(115/255, 185/255, 196/255, .025)
+	love.graphics.setLineWidth(4)
+	local points = {}
+	local phase = 0
+	for x = love.graphics.getWidth(), 0, -1 do
+		phase = phase + .29 + .07 * math.sin(x / 10) + .03 * math.sin(x / 19)
+		while phase >= 1 do
+			phase = phase - 1
+		end
+		local y = love.graphics.getHeight()/2 + 300 * math.sin((phase - Background.phase) * 2 * math.pi)
+		table.insert(points, x)
+		table.insert(points, y)
+	end
+	love.graphics.line(points)
 	love.graphics.pop()
 end
 
