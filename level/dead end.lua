@@ -39,28 +39,28 @@ return {
       tiles = {
         {
           id = 0,
-          type = "door",
+          type = "wall",
           properties = {
             ["color"] = 1
           }
         },
         {
           id = 1,
-          type = "door",
+          type = "wall",
           properties = {
             ["color"] = 2
           }
         },
         {
           id = 2,
-          type = "door",
+          type = "wall",
           properties = {
             ["color"] = 3
           }
         },
         {
           id = 3,
-          type = "door"
+          type = "wall"
         },
         {
           id = 5,
@@ -84,28 +84,28 @@ return {
         },
         {
           id = 10,
-          type = "door",
+          type = "wall",
           properties = {
             ["color"] = 1
           }
         },
         {
           id = 11,
-          type = "door",
+          type = "wall",
           properties = {
             ["color"] = 2
           }
         },
         {
           id = 12,
-          type = "door",
+          type = "wall",
           properties = {
             ["color"] = 3
           }
         },
         {
           id = 13,
-          type = "door"
+          type = "wall"
         },
         {
           id = 14,

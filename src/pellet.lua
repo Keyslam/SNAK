@@ -1,10 +1,10 @@
 local Class  = require("lib.middleclass")
-local Vector = require("lib.vector")
-
-local Util = require("src.util")
+local Image = require 'image'
 local Map = require("src.map")
-
 local Pellet = Class("Pellet")
+local Quad = require 'image.quad'
+local Util = require("src.util")
+local Vector = require("lib.vector")
 
 function Pellet:initialize(x, y, frequency)
 	self.position = Vector(x, y)
@@ -27,9 +27,9 @@ function Pellet:draw()
 	end
 
 	love.graphics.push("all")
-	local x, y = Util.gridToScreen((self.position + Vector(.5, .5)):unpack())
+	local x, y = Util.gridToScreen(self.position:unpack())
 	love.graphics.setColor(self.frequency.r, self.frequency.g, self.frequency.b)
-	love.graphics.circle('fill', x, y, 8, 64)
+	love.graphics.draw(Image.tileset, Quad.pellet, x, y)
 	love.graphics.pop()
 end
 
