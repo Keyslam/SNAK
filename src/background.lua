@@ -10,24 +10,20 @@ function Background.update(dt)
 end
 
 function Background.draw()
+	love.graphics.push 'all'
 	love.graphics.setColor(176 / 255, 66 / 255, 1, 1)
-
 	love.graphics.setCanvas(Background.canvas)
-
 	love.graphics.rectangle("fill", 0, love.graphics.getHeight() / 2 - 200, love.graphics.getWidth(), 50)
 	love.graphics.rectangle("fill", 0, love.graphics.getHeight() / 2 - 50, love.graphics.getWidth(), 100)
 	love.graphics.rectangle("fill", 0, love.graphics.getHeight() / 2 + 150, love.graphics.getWidth(), 25)
+	love.graphics.pop()
 
-	love.graphics.setCanvas()
-
+	love.graphics.push 'all'
 	love.graphics.setShader(Background.shader)
 	Background.shader:send("time", Background.time)
-
+	love.graphics.setColor(1, 1, 1, .1)
 	love.graphics.draw(Background.canvas)
-
-	love.graphics.setShader()
-
-	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.pop()
 end
 
 return Background

@@ -10,11 +10,24 @@ local Wall = require("src.wall")
 local Background = require("src.background")
 
 local Game = {}
-Game.effect = Moonshine(Moonshine.effects.glow)
-Game.effect.parameters = {
-	glow = {
-		min_luma = 0,
-		strength = 4,
+
+Game.blur = Moonshine(Moonshine.effects.fastgaussianblur)
+Game.blur.parameters = {
+	fastgaussianblur = {
+		taps = 35,
+	},
+}
+Game.blurCanvas = love.graphics.newCanvas()
+Game.postEffect = Moonshine(Moonshine.effects.filmgrain)
+	.chain(Moonshine.effects.vignette)
+Game.postEffect.parameters = {
+	filmgrain = {
+		opacity = 1,
+	},
+	vignette = {
+		radius = 1,
+		softness = 1,
+		opacity = .15,
 	},
 }
 
@@ -64,22 +77,31 @@ function Game:keypressed(key)
 	if (key == "d") then Game.snake:moveX( 1) end
 end
 
-local function DrawScene(dt)
+local function DrawScene()
+	Background:draw()
 	Game.snake:draw()
-
 	Game.level.layers.tiles:draw()
-
 	for _, pellet in ipairs(Game.pellets) do
 		pellet:draw()
 	end
 end
 
-function Game:draw(dt)
-	--Background:draw()
+local function DrawPost()
+	DrawScene()
+	love.graphics.push 'all'
+	love.graphics.setBlendMode 'add'
+	love.graphics.setColor(1, 1, 1, .25)
+	love.graphics.draw(Game.blurCanvas)
+	love.graphics.pop()
+end
 
-	Game.effect.draw(DrawScene)
-
-	love.graphics.print("Gamestate: Game", 0, 0)
+function Game:draw()
+	love.graphics.push 'all'
+	love.graphics.setCanvas(Game.blurCanvas)
+	love.graphics.clear()
+	Game.blur.draw(DrawScene)
+	love.graphics.pop()
+	Game.postEffect.draw(DrawPost)
 end
 
 function Game:keypressed(key)
