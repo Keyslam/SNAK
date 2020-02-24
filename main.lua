@@ -1,10 +1,16 @@
-local Gamestate = require("lib.gamestate")
+currentLevel = 1
 
 local Game = require("src.states.game")
+local Gamestate = require("lib.gamestate")
+local Timer = require("lib.timer")
 
 function love.load()
 	Gamestate.registerEvents()
-	Gamestate.switch(Game, 'intersect')
+	Gamestate.switch(Game)
+end
+
+function love.update(dt)
+	Timer.update(dt)
 end
 
 function love.keypressed(key)

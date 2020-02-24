@@ -1,13 +1,14 @@
+local Background = require("src.background")
 local Cartographer = require("lib.cartographer")
-local Moonshine = require("lib.moonshine")
-
 local Frequencies = require("src.frequencies")
 local Gamestate = require("lib.gamestate")
+local Level = require("level")
 local Map = require("src.map")
-local Snake = require("src.snake")
+local Moonshine = require("lib.moonshine")
 local Pellet = require("src.pellet")
+local Snake = require("src.snake")
+local Timer = require("lib.timer")
 local Wall = require("src.wall")
-local Background = require("src.background")
 
 local Game = {}
 
@@ -31,13 +32,13 @@ Game.postEffect.parameters = {
 	},
 }
 
-function Game:enter(previous, levelName)
-	self.levelName = levelName
-	self.level = Cartographer.load("level/" .. levelName .. ".lua")
+function Game:enter(previous)
+	self.level = Cartographer.load("level/" .. Level[currentLevel] .. ".lua")
 
 	Map.setup(self.level.width, self.level.height)
-	Game.pellets = {}
-	Game.walls   = {}
+	Game.pellets      = {}
+	Game.walls        = {}
+	Game.levelCleared = false
 
 	for _, gid, gridX, gridY in self.level.layers.tiles:getTiles() do
 		local x, y = gridX + 1, gridY + 1
@@ -57,6 +58,20 @@ function Game:enter(previous, levelName)
 			table.insert(Game.pellets, Pellet(x, y, Frequencies[color]))
 		end
 	end
+
+	-- cosmetic
+	Game.levelEnterAnimationProgress = 0
+	Game.levelClearAnimationCanvas   = love.graphics.newCanvas(10, 10)
+	Game.levelClearAnimationProgress = 0
+	Game.levelClearAnimationCanvas:setFilter 'nearest'
+	Timer.tween(1, self, {levelEnterAnimationProgress = 1})
+end
+
+function Game:areAllPelletsEaten()
+	for _, pellet in ipairs(self.pellets) do
+		if not pellet.dead then return false end
+	end
+	return true
 end
 
 function Game:update(dt)
@@ -64,17 +79,27 @@ function Game:update(dt)
 	for _, pellet in ipairs(Game.pellets) do
 		pellet:update(dt)
 	end
+	if not self.levelCleared then
+		if self:areAllPelletsEaten() then
+			currentLevel = currentLevel + 1
+			self.levelCleared = true
+			Timer.tween(2, self, {levelClearAnimationProgress = 1}, 'linear', function()
+				Gamestate.switch(self)
+			end)
+		end
+	end
 end
 
 function Game:leave()
 	Map.clear()
 end
 
-function Game:keypressed(key)
-	if (key == "w") then Game.snake:moveY(-1) end
-	if (key == "a") then Game.snake:moveX(-1) end
-	if (key == "s") then Game.snake:moveY( 1) end
-	if (key == "d") then Game.snake:moveX( 1) end
+local function RenderLevelClearAnimation()
+	love.graphics.push 'all'
+	love.graphics.setCanvas(Game.levelClearAnimationCanvas)
+	love.graphics.clear()
+	love.graphics.circle('fill', 5, 5, Game.levelClearAnimationProgress * 8, 64)
+	love.graphics.pop()
 end
 
 local function DrawScene()
@@ -84,6 +109,10 @@ local function DrawScene()
 	for _, pellet in ipairs(Game.pellets) do
 		pellet:draw()
 	end
+	love.graphics.setColor(1, 1, 1)
+	love.graphics.draw(Game.levelClearAnimationCanvas, 0, 0, 0, 64, 64)
+	love.graphics.setColor(1, 1, 1, 1 - Game.levelEnterAnimationProgress)
+	love.graphics.rectangle('fill', 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
 end
 
 local function DrawPost()
@@ -96,6 +125,7 @@ local function DrawPost()
 end
 
 function Game:draw()
+	RenderLevelClearAnimation()
 	love.graphics.push 'all'
 	love.graphics.setCanvas(Game.blurCanvas)
 	love.graphics.clear()
@@ -105,13 +135,15 @@ function Game:draw()
 end
 
 function Game:keypressed(key)
-	if (key == "w") then Game.snake:moveY(-1) end
-	if (key == "a") then Game.snake:moveX(-1) end
-	if (key == "s") then Game.snake:moveY( 1) end
-	if (key == "d") then Game.snake:moveX( 1) end
+	if not self.levelCleared then
+		if (key == "w") then Game.snake:moveY(-1) end
+		if (key == "a") then Game.snake:moveX(-1) end
+		if (key == "s") then Game.snake:moveY( 1) end
+		if (key == "d") then Game.snake:moveX( 1) end
+	end
 
 	if key == 'r' then
-		Gamestate.switch(self, self.levelName)
+		Gamestate.switch(self)
 	end
 
 	if (key == "f") then
