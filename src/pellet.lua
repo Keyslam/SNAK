@@ -16,7 +16,9 @@ function Pellet:initialize(x, y, frequency)
 end
 
 function Pellet:consume(snake)
-	snake:setFrequency(self.frequency)
+	if (self.frequency) then
+		snake:setFrequency(self.frequency)
+	end
 
 	Map.remove(self, self.position.x, self.position.y)
 
@@ -37,7 +39,12 @@ function Pellet:draw()
 
 	love.graphics.push("all")
 	local x, y = Util.gridToScreen(self.position:unpack())
-	love.graphics.setColor(self.frequency.r, self.frequency.g, self.frequency.b)
+
+	if (self.frequency) then
+		love.graphics.setColor(self.frequency.r, self.frequency.g, self.frequency.b)
+	else
+		love.graphics.setColor(1, 1, 1, 1)
+	end
 	love.graphics.draw(Image.tileset, Quad.pellet, x, y + 4 * math.sin(self.animationPhase * 2 * math.pi))
 	love.graphics.pop()
 end
