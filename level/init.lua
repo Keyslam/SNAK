@@ -1,5 +1,4 @@
 return {
-	'switch',
 	'tut_1',
 	'tut_2',
 	'tut_3',
@@ -9,4 +8,6 @@ return {
 	'doors',
 	'dead end',
 	'intersect',
+	'switch',
+	'last',
 }

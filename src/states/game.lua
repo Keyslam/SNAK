@@ -10,6 +10,9 @@ local Snake = require("src.snake")
 local Timer = require("lib.timer")
 local Wall = require("src.wall")
 
+local Font = love.graphics.newFont("font.ttf", 32)
+love.graphics.setFont(Font)
+
 local Game = {}
 
 Game.blur = Moonshine(Moonshine.effects.fastgaussianblur)
@@ -32,7 +35,21 @@ Game.postEffect.parameters = {
 	},
 }
 
+local isEnd = false
+
 function Game:enter(previous)
+	if (Level[currentLevel] == nil) then
+		isEnd = true
+
+		Game.levelEnterAnimationProgress = 0
+		Game.levelClearAnimationCanvas   = love.graphics.newCanvas(10, 10)
+		Game.levelClearAnimationProgress = 0
+		Game.levelClearAnimationCanvas:setFilter 'nearest'
+		Timer.tween(1, self, {levelEnterAnimationProgress = 1})
+		
+		return
+	end
+
 	self.level = Cartographer.load("level/" .. Level[currentLevel] .. ".lua")
 
 	Map.setup(self.level.width, self.level.height)
@@ -76,14 +93,20 @@ end
 
 function Game:update(dt)
 	Background.update(dt)
+
+	if (isEnd) then
+		return
+	end
+
 	for _, pellet in ipairs(Game.pellets) do
 		pellet:update(dt)
 	end
 	if not self.levelCleared then
 		if self:areAllPelletsEaten() then
-			currentLevel = currentLevel + 1
+			
 			self.levelCleared = true
 			Timer.tween(2, self, {levelClearAnimationProgress = 1}, 'linear', function()
+				currentLevel = currentLevel + 1
 				Gamestate.switch(self)
 			end)
 		end
@@ -104,15 +127,30 @@ end
 
 local function DrawScene()
 	Background:draw()
-	Game.snake:draw()
-	Game.level.layers.tiles:draw()
-	for _, pellet in ipairs(Game.pellets) do
-		pellet:draw()
+
+	love.graphics.setColor(1, 1, 1, 1)
+	if (currentLevel == 1) then
+		love.graphics.printf("Welcome to SNAK'.\n\nUse the arrow keys to move.\n Press R to reset.", love.graphics.getWidth() * 0.05, 400 + 5 * math.sin(love.timer.getTime()), love.graphics.getWidth() * 0.9, "center") 
 	end
-	love.graphics.setColor(1, 1, 1)
-	love.graphics.draw(Game.levelClearAnimationCanvas, 0, 0, 0, 64, 64)
-	love.graphics.setColor(1, 1, 1, 1 - Game.levelEnterAnimationProgress)
-	love.graphics.rectangle('fill', 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+
+	if (isEnd) then
+		love.graphics.printf("Thanks for playing!\n\nPress ESC to exit.\n\n Made by:\nPositive07\nTesselode\nTjakka5", love.graphics.getWidth() * 0.05, 150 + 5 * math.sin(love.timer.getTime()), love.graphics.getWidth() * 0.9, "center") 
+
+		love.graphics.setColor(1, 1, 1)
+		love.graphics.draw(Game.levelClearAnimationCanvas, 0, 0, 0, 64, 64)
+		love.graphics.setColor(1, 1, 1, 1 - Game.levelEnterAnimationProgress)
+		love.graphics.rectangle('fill', 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+	else
+		Game.snake:draw()
+		Game.level.layers.tiles:draw()
+		for _, pellet in ipairs(Game.pellets) do
+			pellet:draw()
+		end
+		love.graphics.setColor(1, 1, 1)
+		love.graphics.draw(Game.levelClearAnimationCanvas, 0, 0, 0, 64, 64)
+		love.graphics.setColor(1, 1, 1, 1 - Game.levelEnterAnimationProgress)
+		love.graphics.rectangle('fill', 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+	end
 end
 
 local function DrawPost()
