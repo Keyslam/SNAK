@@ -4,7 +4,7 @@ local Game = require("src.states.game")
 
 function love.load()
 	Gamestate.registerEvents()
-	Gamestate.switch(Game, 'dead end')
+	Gamestate.switch(Game, 'intersect')
 end
 
 function love.keypressed(key)
