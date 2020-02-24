@@ -136,10 +136,10 @@ end
 
 function Game:keypressed(key)
 	if not self.levelCleared then
-		if (key == "w") then Game.snake:moveY(-1) end
-		if (key == "a") then Game.snake:moveX(-1) end
-		if (key == "s") then Game.snake:moveY( 1) end
-		if (key == "d") then Game.snake:moveX( 1) end
+		if (key == "up") then Game.snake:moveY(-1) end
+		if (key == "left") then Game.snake:moveX(-1) end
+		if (key == "down") then Game.snake:moveY( 1) end
+		if (key == "right") then Game.snake:moveX( 1) end
 	end
 
 	if key == 'r' then
