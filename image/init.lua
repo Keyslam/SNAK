@@ -1,3 +1,3 @@
 return {
-	tileset = love.graphics.newImage 'image/SNAK-tileset.png',
+	tileset = love.graphics.newImage 'image/SNAK-Tileset.png',
 }
